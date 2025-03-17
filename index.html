@@ -19,6 +19,7 @@
 <body>
     <script>
         let recognition;
+        let isListening = true; // Controla si el reconocimiento sigue activo
 
         function startRecognition() {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -31,16 +32,28 @@
                 
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     enviarAlerta(command);
+                    stopRecognition(); // Detener la detección después de enviar la alerta
                 }
             };
 
             recognition.onend = function () {
-                recognition.start();
+                if (isListening) {
+                    recognition.start();
+                }
             };
 
             recognition.onerror = function () {
-                recognition.start();
+                if (isListening) {
+                    recognition.start();
+                }
             };
+        }
+
+        function stopRecognition() {
+            isListening = false;
+            if (recognition) {
+                recognition.stop();
+            }
         }
 
         function enviarAlerta(mensaje) {
