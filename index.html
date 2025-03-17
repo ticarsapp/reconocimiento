@@ -5,25 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
     <style>
-        /* Hacer que la página no ocupe ningún espacio */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: transparent; /* Fondo transparente */
+            background: transparent;
         }
         
         body {
-            display: none; /* Aseguramos que no se muestre nada en la página */
+            display: none; /* Aseguramos que no se muestre nada */
         }
     </style>
 </head>
 <body>
     <script>
         let recognition;
-        let isListening = true; // Para controlar si el reconocimiento debe seguir activo
+        let isListening = true;
 
         // Función para iniciar el reconocimiento de voz
         function startRecognition() {
@@ -38,7 +37,8 @@
 
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
-                    console.log("¡Palabra clave detectada! Acción de pánico activada.");
+                    console.log("¡Palabra clave detectada! Enviando datos a la URL...");
+                    sendToUrl(command); // Enviar los datos a la URL
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
             };
@@ -63,12 +63,38 @@
             }
         }
 
+        // Función para enviar la palabra clave a la URL
+        function sendToUrl(command) {
+            const apiUrl = "https://editor.apphive.io/hook/ccp_xfhWqSYaXL9XsprUqCRMcJ"; // URL proporcionada
+
+            // Preparamos los datos a enviar
+            const data = {
+                custom: command, // Almacenamos la palabra clave en la variable "custom"
+                fecha: new Date().toISOString(), // Fecha de la emergencia
+                ubicacion: "Ubicación del conductor" // Puedes incluir más datos si lo necesitas
+            };
+
+            // Enviamos la solicitud POST a la URL de tu API
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Datos enviados a la URL:", data);
+                alert("La emergencia ha sido registrada.");
+            })
+            .catch((error) => {
+                console.error("Error al enviar los datos:", error);
+            });
+        }
+
         // Iniciar el reconocimiento cuando la página cargue
         window.onload = function () {
-            // Iniciar el reconocimiento de voz cuando la página se cargue
-            startRecognition();
-            
-            // Asegurarnos de que el contenido quede completamente oculto
+            startRecognition(); // Inicia el reconocimiento de voz cuando la página se cargue
             document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
         };
     </script>
