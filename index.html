@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
     <style>
-        /* Hacer invisible todo el contenido de la página */
+        /* Ocultar todo el contenido de la página */
         body {
-            visibility: hidden; /* Se mantiene el espacio en el layout pero es invisible */
+            display: none; /* Esto asegura que no se vea nada */
         }
     </style>
 </head>
@@ -56,11 +56,8 @@
 
         // Iniciar el reconocimiento cuando la página cargue
         window.onload = function () {
-            // Iniciar el reconocimiento y ocultar la interfaz
-            startRecognition();
-
-            // Ocultar la interfaz completamente al cargar
-            document.body.style.visibility = "hidden";
+            startRecognition(); // Inicia el reconocimiento de voz cuando la página se cargue
+            document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
         };
     </script>
 </body>
