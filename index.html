@@ -38,7 +38,7 @@
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     console.log("¡Palabra clave detectada! Acción de pánico activada.");
-                    sendPanicMessage(); // Enviar mensaje
+                    sendPanicAlert(); // Enviar alerta de pánico
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
             };
@@ -63,24 +63,35 @@
             }
         }
 
-        // Función para enviar el mensaje de pánico a Apphive
-        function sendPanicMessage() {
-            // Enviar mensaje a la WebView en Apphive
-            window.parent.postMessage({ action: "panic_alert", message: "¡Emergencia! Necesito ayuda." }, "*");
-            console.log("Mensaje de emergencia enviado a Apphive.");
+        // Función para enviar la alerta de pánico a tu servidor (API)
+        function sendPanicAlert() {
+            const url = "https://tu-servidor.com/api/panic-alert"; // URL de tu API
+            const data = {
+                action: "panic_alert",
+                message: "¡Emergencia! Necesito ayuda."
+            };
+
+            // Enviar un POST request
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Alerta de pánico enviada", data);
+            })
+            .catch(error => {
+                console.error("Error al enviar la alerta de pánico:", error);
+            });
         }
 
         window.onload = function () {
             startRecognition();
             document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
         };
-
-        // Escuchar los mensajes que llegan a la WebView (en caso de que sea necesario hacer algo adicional)
-        window.addEventListener("message", function(event) {
-            if (event.data.action === "panic_alert") {
-                alert(event.data.message);  // Puedes reemplazar esto por lo que necesites hacer con el mensaje
-            }
-        });
     </script>
 </body>
 </html>
