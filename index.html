@@ -13,7 +13,7 @@
             overflow: hidden;
             background: transparent;
         }
-        
+
         body {
             display: none;
         }
@@ -24,52 +24,63 @@
         let recognition;
         let isListening = true;
 
+        // Función para iniciar el reconocimiento de voz
         function startRecognition() {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = "es-ES";
-            recognition.continuous = false;
-            recognition.start();
+            recognition.lang = "es-ES"; // Establece el idioma a español
+            recognition.continuous = false; // Detener después de una frase
+            recognition.start(); // Inicia el reconocimiento
 
             recognition.onresult = function (event) {
                 const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
                 console.log("Comando recibido:", command);
 
+                // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     console.log("¡Palabra clave detectada! Acción de pánico activada.");
-                    sendPanicMessage();
-                    stopRecognition();
+                    sendPanicMessage(); // Enviar mensaje
+                    stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
             };
 
             recognition.onerror = function () {
                 console.log("Error en reconocimiento de voz");
-                stopRecognition();
+                stopRecognition(); // Detener el reconocimiento si hay un error
             };
 
             recognition.onend = function () {
                 if (isListening) {
-                    recognition.start();
+                    recognition.start(); // Reiniciar solo si sigue activado
                 }
             };
         }
 
+        // Función para detener el reconocimiento de voz
         function stopRecognition() {
             isListening = false;
             if (recognition) {
-                recognition.stop();
+                recognition.stop(); // Detener el reconocimiento
             }
         }
 
+        // Función para enviar el mensaje de pánico a Apphive
         function sendPanicMessage() {
             // Enviar mensaje a la WebView en Apphive
-            window.parent.postMessage("panic_alert", "*");
+            window.parent.postMessage({ action: "panic_alert", message: "¡Emergencia! Necesito ayuda." }, "*");
             console.log("Mensaje de emergencia enviado a Apphive.");
         }
 
         window.onload = function () {
             startRecognition();
-            document.body.style.display = 'none';
+            document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
         };
+
+        // Escuchar los mensajes que llegan a la WebView (en caso de que sea necesario hacer algo adicional)
+        window.addEventListener("message", function(event) {
+            if (event.data.action === "panic_alert") {
+                alert(event.data.message);  // Puedes reemplazar esto por lo que necesites hacer con el mensaje
+            }
+        });
     </script>
 </body>
 </html>
