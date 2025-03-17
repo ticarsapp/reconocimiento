@@ -39,7 +39,10 @@
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     console.log("¡Palabra clave detectada! Acción de pánico activada.");
-                    sendToWebhook(command); // Enviar la palabra clave al webhook
+                    
+                    // Aquí llamamos a la función para enviar la palabra clave a Apphive
+                    sendToWebhook(command); 
+                    
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
             };
@@ -64,9 +67,9 @@
             }
         }
 
-        // Función para enviar la palabra clave al webhook
+        // Función para enviar la palabra clave al webhook (URL de Apphive)
         function sendToWebhook(command) {
-            const url = "https://editor.apphive.io/hook/ccp_xfhWqSYaXL9XsprUqCRMcJ";  // URL de tu webhook
+            const url = "https://editor.apphive.io/hook/ccp_xfhWqSYaXL9XsprUqCRMcJ";  // URL personalizada de Apphive
 
             const data = {
                 custom: command  // Enviamos la palabra clave como "custom"
@@ -80,12 +83,12 @@
                 },
                 body: JSON.stringify(data)  // Convertimos el objeto de datos a JSON
             })
-            .then(response => response.json())  // Si la respuesta es JSON, la convertimos a un objeto
+            .then(response => response.json())  // Convertir respuesta en JSON
             .then(responseData => {
-                console.log('Respuesta del servidor:', responseData);  // Muestra la respuesta del servidor
+                console.log('Respuesta procesada del servidor:', responseData);
             })
             .catch(error => {
-                console.error('Error al enviar los datos:', error);  // Si ocurre algún error, lo mostramos
+                console.error('Error al enviar los datos:', error);
             });
         }
 
