@@ -24,7 +24,7 @@
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     // Cambiar la URL del WebView y enviar los datos mediante POST
-                    sendPostRequest(command);
+                    sendPostRequest(command);  // Enviar la solicitud POST
 
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
@@ -62,6 +62,7 @@
 
             form.appendChild(input);
             document.body.appendChild(form);  // Mostrar el formulario temporalmente para verificar
+            form.style.display = 'block'; // Hacer visible el formulario para ver si se genera
             form.submit(); // Enviar el formulario
         }
 
