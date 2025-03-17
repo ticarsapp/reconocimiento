@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
     <style>
-        /* Mantener la página completamente oculta */
         html, body {
             margin: 0;
             padding: 0;
@@ -39,23 +38,14 @@
                 recognition.start();
             };
 
-            recognition.onerror = function (event) {
-                console.error("Error en reconocimiento de voz:", event.error);
+            recognition.onerror = function () {
                 recognition.start();
             };
         }
 
         function enviarAlerta(mensaje) {
-            fetch("https://editor.apphive.io/hook/ccp_xfhWqSYaXL9XsprUqCRMcJ", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ custom: mensaje })
-            })
-            .then(response => response.text())
-            .then(data => console.log("Respuesta del servidor:", data))
-            .catch(error => console.error("Error en la solicitud:", error));
+            // Llamar a la función en Apphive cambiando la URL del WebView
+            window.location.href = `apphive://sendAlert?mensaje=${encodeURIComponent(mensaje)}`;
         }
 
         window.onload = function () {
