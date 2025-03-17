@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
     <style>
-        /* Ocultar la página al principio */
+        /* Ocultar todo el contenido */
         body {
-            visibility: hidden;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <h1>Prueba de Reconocimiento de Voz</h1>
+    <h1>Reconocimiento de Voz</h1>
     <p id="status">Escuchando...</p>
 
     <script>
@@ -21,9 +21,7 @@
 
         // Función para iniciar el reconocimiento de voz
         function startRecognition() {
-            // Hacer visible el contenido cuando inicie el reconocimiento
-            document.body.style.visibility = 'visible';
-
+            // No hacer visible nada, pero iniciar el reconocimiento
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "es-ES"; // Establece el idioma a español
             recognition.continuous = false; // Detener después de una frase
@@ -35,10 +33,9 @@
 
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
-                    document.getElementById("status").innerHTML = "¡Palabra clave detectada! Acción de pánico activada.";
+                    // Activar la acción de pánico aquí
+                    console.log("¡Palabra clave detectada! Acción de pánico activada.");
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
-                } else {
-                    document.getElementById("status").innerHTML = "Palabra no reconocida. Intenta otra vez.";
                 }
             };
 
