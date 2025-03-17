@@ -39,6 +39,7 @@
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     console.log("¡Palabra clave detectada! Acción de pánico activada.");
+                    sendPanicMessage(); // Llamamos a la función para enviar el mensaje
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
             };
@@ -60,6 +61,18 @@
             isListening = false; // Cambiar estado a no escuchar más
             if (recognition) {
                 recognition.stop(); // Detener el reconocimiento
+            }
+        }
+
+        // Función para enviar un mensaje a la WebView
+        function sendPanicMessage() {
+            // Suponiendo que tu WebView tiene una función JavaScript accesible llamada "sendMessage"
+            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.sendMessage) {
+                // Esto es para aplicaciones móviles que usan WebView (como iOS)
+                window.webkit.messageHandlers.sendMessage.postMessage("¡Emergencia! Necesito ayuda.");
+            } else {
+                // Enviar mensaje en un entorno web (por ejemplo, mostrar en consola o actualizar el DOM)
+                alert("¡Emergencia! Necesito ayuda.");
             }
         }
 
