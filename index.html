@@ -4,21 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
-    <style>
-        /* Hacer que la página no ocupe ningún espacio */
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: transparent; /* Fondo transparente */
-        }
-        
-        body {
-            display: block; /* Aseguramos que el contenido quede visible */
-        }
-    </style>
 </head>
 <body>
     <script>
@@ -39,7 +24,7 @@
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     // Cambiar la URL del WebView y enviar los datos mediante POST
-                    redirectToWebhook(command);
+                    sendPostRequest(command);
 
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
@@ -64,33 +49,24 @@
             }
         }
 
-        // Función para redirigir a la URL del WebHook con los datos (POST)
-        function redirectToWebhook(customData) {
-            // Crear un formulario dinámico para enviar la solicitud POST
+        // Función para enviar la solicitud POST con el custom
+        function sendPostRequest(customData) {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = webhookURL;
 
-            // Crear un campo oculto para la variable custom
             const input = document.createElement('input');
             input.type = 'hidden';
             input.name = 'custom';
             input.value = customData;
 
-            // Mostrar el formulario en la página para ver qué contiene
-            form.style.display = 'block'; // Hacer que el formulario se vea
-
-            // Agregar el campo al formulario
             form.appendChild(input);
-
-            // Agregar el formulario al cuerpo y enviarlo
-            document.body.appendChild(form);
+            document.body.appendChild(form);  // Mostrar el formulario temporalmente para verificar
             form.submit(); // Enviar el formulario
         }
 
         // Iniciar el reconocimiento cuando la página cargue
         window.onload = function () {
-            // Iniciar el reconocimiento de voz cuando la página se cargue
             startRecognition();
         };
     </script>
