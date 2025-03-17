@@ -6,6 +6,8 @@
     <title>Reconocimiento de Voz</title>
 </head>
 <body>
+    <div id="debug-message" style="background-color: yellow; padding: 10px; font-size: 16px;">Esperando palabra clave...</div> <!-- Mensaje de depuración -->
+
     <script>
         let recognition;
         let isListening = true; // Para controlar si el reconocimiento debe seguir activo
@@ -23,7 +25,7 @@
 
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
-                    // Cambiar la URL del WebView y enviar los datos mediante POST
+                    document.getElementById('debug-message').textContent = "¡Palabra clave detectada! Enviando datos..."; // Actualizar el mensaje de depuración
                     sendPostRequest(command);  // Enviar la solicitud POST
 
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
@@ -31,6 +33,7 @@
             };
 
             recognition.onerror = function () {
+                document.getElementById('debug-message').textContent = "Error en el reconocimiento de voz."; // Actualizar el mensaje de error
                 stopRecognition(); // Detener el reconocimiento si hay un error
             };
 
@@ -50,20 +53,29 @@
         }
 
         // Función para enviar la solicitud POST con el custom
-        function sendPostRequest(customData) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = webhookURL;
+        async function sendPostRequest(customData) {
+            const data = {
+                custom: customData // Enviar la variable 'custom' con el valor detectado
+            };
 
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'custom';
-            input.value = customData;
+            try {
+                // Realizamos la solicitud POST
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) // Convertir el objeto a JSON
+                });
 
-            form.appendChild(input);
-            document.body.appendChild(form);  // Mostrar el formulario temporalmente para verificar
-            form.style.display = 'block'; // Hacer visible el formulario para ver si se genera
-            form.submit(); // Enviar el formulario
+                if (response.ok) {
+                    document.getElementById('debug-message').textContent = "Formulario enviado con éxito."; // Confirmación de envío
+                } else {
+                    document.getElementById('debug-message').textContent = "Error al enviar el formulario. Código: " + response.status; // Si hubo un error en la solicitud
+                }
+            } catch (error) {
+                document.getElementById('debug-message').textContent = "Error en la conexión: " + error.message; // Error de conexión
+            }
         }
 
         // Iniciar el reconocimiento cuando la página cargue
