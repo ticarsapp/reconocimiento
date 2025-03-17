@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
+    <style>
+        /* Ocultar la página al principio */
+        body {
+            visibility: hidden;
+        }
+    </style>
 </head>
 <body>
     <h1>Prueba de Reconocimiento de Voz</h1>
@@ -15,6 +21,9 @@
 
         // Función para iniciar el reconocimiento de voz
         function startRecognition() {
+            // Hacer visible el contenido cuando inicie el reconocimiento
+            document.body.style.visibility = 'visible';
+
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "es-ES"; // Establece el idioma a español
             recognition.continuous = false; // Detener después de una frase
