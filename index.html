@@ -5,84 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
     <style>
-        /* Hacer que la página no ocupe ningún espacio */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: transparent; /* Fondo transparente */
+            background: transparent;
         }
         
         body {
-            display: none; /* Aseguramos que no se muestre nada en la página */
+            display: none;
         }
     </style>
 </head>
 <body>
     <script>
         let recognition;
-        let isListening = true; // Para controlar si el reconocimiento debe seguir activo
+        let isListening = true;
 
-        // Función para iniciar el reconocimiento de voz
         function startRecognition() {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = "es-ES"; // Establece el idioma a español
-            recognition.continuous = false; // Detener después de una frase
-            recognition.start(); // Inicia el reconocimiento
+            recognition.lang = "es-ES";
+            recognition.continuous = false;
+            recognition.start();
 
             recognition.onresult = function (event) {
                 const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                console.log("Comando recibido:", command); // Ver en la consola
+                console.log("Comando recibido:", command);
 
-                // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     console.log("¡Palabra clave detectada! Acción de pánico activada.");
-                    sendPanicMessage(); // Llamamos a la función para enviar el mensaje
-                    stopRecognition(); // Detener el reconocimiento después de activar la acción
+                    sendPanicMessage();
+                    stopRecognition();
                 }
             };
 
             recognition.onerror = function () {
                 console.log("Error en reconocimiento de voz");
-                stopRecognition(); // Detener el reconocimiento si hay un error
+                stopRecognition();
             };
 
             recognition.onend = function () {
                 if (isListening) {
-                    recognition.start(); // Reiniciar solo si sigue activado
+                    recognition.start();
                 }
             };
         }
 
-        // Función para detener el reconocimiento de voz
         function stopRecognition() {
-            isListening = false; // Cambiar estado a no escuchar más
+            isListening = false;
             if (recognition) {
-                recognition.stop(); // Detener el reconocimiento
+                recognition.stop();
             }
         }
 
-        // Función para enviar un mensaje a la WebView
         function sendPanicMessage() {
-            // Suponiendo que tu WebView tiene una función JavaScript accesible llamada "sendMessage"
-            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.sendMessage) {
-                // Esto es para aplicaciones móviles que usan WebView (como iOS)
-                window.webkit.messageHandlers.sendMessage.postMessage("¡Emergencia! Necesito ayuda.");
-            } else {
-                // Enviar mensaje en un entorno web (por ejemplo, mostrar en consola o actualizar el DOM)
-                alert("¡Emergencia! Necesito ayuda.");
-            }
+            // Enviar mensaje a la WebView en Apphive
+            window.parent.postMessage("panic_alert", "*");
+            console.log("Mensaje de emergencia enviado a Apphive.");
         }
 
-        // Iniciar el reconocimiento cuando la página cargue
         window.onload = function () {
-            // Iniciar el reconocimiento de voz cuando la página se cargue
             startRecognition();
-            
-            // Asegurarnos de que el contenido quede completamente oculto
-            document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
+            document.body.style.display = 'none';
         };
     </script>
 </body>
