@@ -16,7 +16,7 @@
         }
         
         body {
-            display: none; /* Aseguramos que no se muestre nada en la página */
+            display: block; /* Aseguramos que el contenido quede visible */
         }
     </style>
 </head>
@@ -92,9 +92,6 @@
         window.onload = function () {
             // Iniciar el reconocimiento de voz cuando la página se cargue
             startRecognition();
-            
-            // Asegurarnos de que el contenido quede completamente oculto
-            document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
         };
     </script>
 </body>
