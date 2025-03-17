@@ -12,6 +12,9 @@
             height: 100%;
             overflow: hidden;
             background: transparent;
+        }
+
+        body {
             display: none;
         }
     </style>
@@ -19,36 +22,39 @@
 <body>
     <script>
         let recognition;
-        let isListening = true; // Controla si el reconocimiento sigue activo
+        let isListening = true;
 
+        // Función para iniciar el reconocimiento de voz
         function startRecognition() {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = "es-ES";
-            recognition.continuous = true;
-            recognition.start();
+            recognition.lang = "es-ES"; // Establece el idioma a español
+            recognition.continuous = false; // Detener después de una frase
+            recognition.start(); // Inicia el reconocimiento
 
             recognition.onresult = function (event) {
                 const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                
-                if (command.includes("ayuda") || command.includes("emergencia")) {
-                    enviarAlerta(command);
-                    stopRecognition(); // Detener la detección después de enviar la alerta
-                }
-            };
 
-            recognition.onend = function () {
-                if (isListening) {
-                    recognition.start();
+                // Detecta las palabras clave
+                if (command.includes("ayuda") || command.includes("emergencia")) {
+                    stopRecognition(); // Detener el reconocimiento después de activar la acción
+
+                    // Enviar la palabra clave a la URL de Apphive
+                    sendToApphive(command);
                 }
             };
 
             recognition.onerror = function () {
+                stopRecognition(); // Detener el reconocimiento si hay un error
+            };
+
+            recognition.onend = function () {
                 if (isListening) {
-                    recognition.start();
+                    recognition.start(); // Reiniciar solo si sigue activado
                 }
             };
         }
 
+        // Función para detener el reconocimiento de voz
         function stopRecognition() {
             isListening = false;
             if (recognition) {
@@ -56,13 +62,34 @@
             }
         }
 
-        function enviarAlerta(mensaje) {
-            // Llamar a la función en Apphive cambiando la URL del WebView
-            window.location.href = `apphive://sendAlert?mensaje=${encodeURIComponent(mensaje)}`;
+        // Función para enviar la palabra clave detectada a la URL de Apphive
+        function sendToApphive(command) {
+            const url = "https://editor.apphive.io/hook/ccp_kd1seCKtZtSQMFqCY1H8GZ"; // Tu URL personalizada
+            const customData = command;  // La palabra clave detectada (command)
+
+            const data = {
+                custom: customData  // Aquí pasamos la palabra clave detectada
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)  // Enviar la información a la URL
+            })
+            .catch(error => {
+                console.error('Error al enviar los datos:', error);
+            });
         }
 
+        // Iniciar el reconocimiento cuando la página cargue
         window.onload = function () {
+            // Iniciar el reconocimiento de voz cuando la página se cargue
             startRecognition();
+            
+            // Asegurarnos de que el contenido quede completamente oculto
+            document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
         };
     </script>
 </body>
