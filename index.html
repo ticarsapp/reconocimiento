@@ -16,7 +16,7 @@
         function startRecognition() {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "es-ES"; // Establece el idioma a español
-            recognition.continuous = true; // Mantiene la escucha continua
+            recognition.continuous = false; // Detener después de una frase
             recognition.start(); // Inicia el reconocimiento
 
             recognition.onresult = function (event) {
@@ -26,16 +26,17 @@
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     document.getElementById("status").innerHTML = "¡Palabra clave detectada! Acción de pánico activada.";
+                } else {
+                    document.getElementById("status").innerHTML = "Palabra no reconocida. Intenta otra vez.";
                 }
             };
 
             recognition.onend = function () {
-                recognition.start(); // Reinicia la escucha si se detiene
+                // No reiniciar después de terminar
             };
 
             recognition.onerror = function () {
                 console.log("Error en reconocimiento de voz");
-                recognition.start(); // Reinicia si hay un error
             };
         }
 
