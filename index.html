@@ -6,6 +6,9 @@
     <title>Reconocimiento de Voz</title>
 </head>
 <body>
+    <h1>Prueba de Reconocimiento de Voz</h1>
+    <p id="status">Escuchando...</p>
+
     <script>
         let recognition;
 
@@ -18,10 +21,11 @@
 
             recognition.onresult = function (event) {
                 const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                
+                console.log("Comando recibido:", command); // Ver en la consola
+
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
-                    window.location.href = "apphive://panicButton"; // Llama a la acción de pánico en Apphive
+                    document.getElementById("status").innerHTML = "¡Palabra clave detectada! Acción de pánico activada.";
                 }
             };
 
@@ -35,12 +39,8 @@
             };
         }
 
-        // Función para detener el reconocimiento de voz
-        function stopRecognition() {
-            if (recognition) {
-                recognition.stop(); // Detiene el reconocimiento
-            }
-        }
+        // Iniciar el reconocimiento cuando la página cargue
+        window.onload = startRecognition;
     </script>
 </body>
 </html>
