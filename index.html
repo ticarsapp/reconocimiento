@@ -11,6 +11,7 @@
 
     <script>
         let recognition;
+        let isListening = true; // Para controlar si el reconocimiento debe seguir activo
 
         // Función para iniciar el reconocimiento de voz
         function startRecognition() {
@@ -26,18 +27,30 @@
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     document.getElementById("status").innerHTML = "¡Palabra clave detectada! Acción de pánico activada.";
+                    stopRecognition(); // Detener el reconocimiento después de activar la acción
                 } else {
                     document.getElementById("status").innerHTML = "Palabra no reconocida. Intenta otra vez.";
                 }
             };
 
-            recognition.onend = function () {
-                // No reiniciar después de terminar
-            };
-
             recognition.onerror = function () {
                 console.log("Error en reconocimiento de voz");
+                stopRecognition(); // Detener el reconocimiento si hay un error
             };
+
+            recognition.onend = function () {
+                if (isListening) {
+                    recognition.start(); // Reiniciar solo si sigue activado
+                }
+            };
+        }
+
+        // Función para detener el reconocimiento de voz
+        function stopRecognition() {
+            isListening = false; // Cambiar estado a no escuchar más
+            if (recognition) {
+                recognition.stop(); // Detener el reconocimiento
+            }
         }
 
         // Iniciar el reconocimiento cuando la página cargue
