@@ -5,24 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
     <style>
+        /* Hacer que la página no ocupe ningún espacio */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: transparent;
+            background: transparent; /* Fondo transparente */
         }
-
+        
         body {
-            display: none;
+            display: none; /* Aseguramos que no se muestre nada en la página */
         }
     </style>
 </head>
 <body>
     <script>
         let recognition;
-        let isListening = true;
+        let isListening = true; // Para controlar si el reconocimiento debe seguir activo
 
         // Función para iniciar el reconocimiento de voz
         function startRecognition() {
@@ -33,17 +34,17 @@
 
             recognition.onresult = function (event) {
                 const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
+                console.log("Comando recibido:", command); // Ver en la consola
 
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
+                    console.log("¡Palabra clave detectada! Acción de pánico activada.");
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
-
-                    // Enviar la palabra clave a la URL de Apphive
-                    sendToApphive(command);
                 }
             };
 
             recognition.onerror = function () {
+                console.log("Error en reconocimiento de voz");
                 stopRecognition(); // Detener el reconocimiento si hay un error
             };
 
@@ -56,31 +57,10 @@
 
         // Función para detener el reconocimiento de voz
         function stopRecognition() {
-            isListening = false;
+            isListening = false; // Cambiar estado a no escuchar más
             if (recognition) {
-                recognition.stop();
+                recognition.stop(); // Detener el reconocimiento
             }
-        }
-
-        // Función para enviar la palabra clave detectada a la URL de Apphive
-        function sendToApphive(command) {
-            const url = "https://editor.apphive.io/hook/ccp_kd1seCKtZtSQMFqCY1H8GZ"; // Tu URL personalizada
-            const customData = command;  // La palabra clave detectada (command)
-
-            const data = {
-                custom: customData  // Aquí pasamos la palabra clave detectada
-            };
-
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)  // Enviar la información a la URL
-            })
-            .catch(error => {
-                console.error('Error al enviar los datos:', error);
-            });
         }
 
         // Iniciar el reconocimiento cuando la página cargue
