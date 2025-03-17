@@ -5,23 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
     <style>
-        /* Ocultar todo el contenido */
+        /* Hacer invisible todo el contenido de la página */
         body {
-            display: none;
+            visibility: hidden; /* Se mantiene el espacio en el layout pero es invisible */
         }
     </style>
 </head>
 <body>
-    <h1>Reconocimiento de Voz</h1>
-    <p id="status">Escuchando...</p>
-
     <script>
         let recognition;
         let isListening = true; // Para controlar si el reconocimiento debe seguir activo
 
         // Función para iniciar el reconocimiento de voz
         function startRecognition() {
-            // No hacer visible nada, pero iniciar el reconocimiento
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "es-ES"; // Establece el idioma a español
             recognition.continuous = false; // Detener después de una frase
@@ -33,7 +29,6 @@
 
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
-                    // Activar la acción de pánico aquí
                     console.log("¡Palabra clave detectada! Acción de pánico activada.");
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
@@ -60,7 +55,13 @@
         }
 
         // Iniciar el reconocimiento cuando la página cargue
-        window.onload = startRecognition;
+        window.onload = function () {
+            // Iniciar el reconocimiento y ocultar la interfaz
+            startRecognition();
+
+            // Ocultar la interfaz completamente al cargar
+            document.body.style.visibility = "hidden";
+        };
     </script>
 </body>
 </html>
