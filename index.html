@@ -4,14 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        body {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="debug-message" style="background-color: yellow; padding: 10px; font-size: 16px;">Esperando palabra clave...</div> <!-- Mensaje de depuración -->
-
     <script>
         let recognition;
-        let isListening = true; // Para controlar si el reconocimiento debe seguir activo
-        const webhookURL = "https://editor.apphive.io/hook/ccp_kd1seCKtZtSQMFqCY1H8GZ"; // URL del WebHook
+        let isListening = true;
 
         // Función para iniciar el reconocimiento de voz
         function startRecognition() {
@@ -25,15 +36,14 @@
 
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
-                    document.getElementById('debug-message').textContent = "¡Palabra clave detectada! Enviando datos..."; // Actualizar el mensaje de depuración
-                    sendPostRequest(command);  // Enviar la solicitud POST
-
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
+
+                    // Enviar la palabra clave a la URL de Apphive
+                    sendToApphive(command);
                 }
             };
 
             recognition.onerror = function () {
-                document.getElementById('debug-message').textContent = "Error en el reconocimiento de voz."; // Actualizar el mensaje de error
                 stopRecognition(); // Detener el reconocimiento si hay un error
             };
 
@@ -46,41 +56,40 @@
 
         // Función para detener el reconocimiento de voz
         function stopRecognition() {
-            isListening = false; // Cambiar estado a no escuchar más
+            isListening = false;
             if (recognition) {
-                recognition.stop(); // Detener el reconocimiento
+                recognition.stop();
             }
         }
 
-        // Función para enviar la solicitud POST con el custom
-        async function sendPostRequest(customData) {
+        // Función para enviar la palabra clave detectada a la URL de Apphive
+        function sendToApphive(command) {
+            const url = "https://editor.apphive.io/hook/ccp_kd1seCKtZtSQMFqCY1H8GZ"; // Tu URL personalizada
+            const customData = command;  // La palabra clave detectada (command)
+
             const data = {
-                custom: customData // Enviar la variable 'custom' con el valor detectado
+                custom: customData  // Aquí pasamos la palabra clave detectada
             };
 
-            try {
-                // Realizamos la solicitud POST
-                const response = await fetch(webhookURL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data) // Convertir el objeto a JSON
-                });
-
-                if (response.ok) {
-                    document.getElementById('debug-message').textContent = "Formulario enviado con éxito."; // Confirmación de envío
-                } else {
-                    document.getElementById('debug-message').textContent = "Error al enviar el formulario. Código: " + response.status; // Si hubo un error en la solicitud
-                }
-            } catch (error) {
-                document.getElementById('debug-message').textContent = "Error en la conexión: " + error.message; // Error de conexión
-            }
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)  // Enviar la información a la URL
+            })
+            .catch(error => {
+                console.error('Error al enviar los datos:', error);
+            });
         }
 
         // Iniciar el reconocimiento cuando la página cargue
         window.onload = function () {
+            // Iniciar el reconocimiento de voz cuando la página se cargue
             startRecognition();
+            
+            // Asegurarnos de que el contenido quede completamente oculto
+            document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
         };
     </script>
 </body>
