@@ -41,8 +41,8 @@
                 if (command.includes("ayuda") || command.includes("emergencia")) {
                     console.log("¡Palabra clave detectada! Acción de pánico activada.");
                     
-                    // Llamar a la función para enviar los datos a la URL del WebHook
-                    sendDataToWebhook(command);
+                    // Cambiar la URL del WebView y enviar los datos mediante POST
+                    redirectToWebhook(command);
 
                     stopRecognition(); // Detener el reconocimiento después de activar la acción
                 }
@@ -68,27 +68,25 @@
             }
         }
 
-        // Función para enviar los datos al WebHook
-        function sendDataToWebhook(customData) {
-            const data = {
-                custom: customData // Enviar el comando detectado como custom
-            };
+        // Función para redirigir a la URL del WebHook con los datos (POST)
+        function redirectToWebhook(customData) {
+            // Crear un formulario dinámico para enviar la solicitud POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = webhookURL;
 
-            // Enviar una solicitud POST al WebHook
-            fetch(webhookURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data) // Convertir el objeto en formato JSON
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Respuesta del WebHook:', data); // Log de la respuesta
-            })
-            .catch(error => {
-                console.error('Error al enviar los datos:', error);
-            });
+            // Crear un campo oculto para la variable custom
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'custom';
+            input.value = customData;
+
+            // Agregar el campo al formulario
+            form.appendChild(input);
+
+            // Agregar el formulario al cuerpo y enviarlo
+            document.body.appendChild(form);
+            form.submit(); // Enviar el formulario
         }
 
         // Iniciar el reconocimiento cuando la página cargue
