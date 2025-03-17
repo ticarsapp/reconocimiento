@@ -35,12 +35,9 @@
 
             recognition.onresult = function (event) {
                 const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                console.log("Comando recibido:", command); // Ver en la consola
 
                 // Detecta las palabras clave
                 if (command.includes("ayuda") || command.includes("emergencia")) {
-                    console.log("¡Palabra clave detectada! Acción de pánico activada.");
-                    
                     // Cambiar la URL del WebView y enviar los datos mediante POST
                     redirectToWebhook(command);
 
@@ -49,7 +46,6 @@
             };
 
             recognition.onerror = function () {
-                console.log("Error en reconocimiento de voz");
                 stopRecognition(); // Detener el reconocimiento si hay un error
             };
 
