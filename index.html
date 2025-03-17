@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento de Voz</title>
     <style>
+        /* Mantener la página completamente oculta */
         html, body {
             margin: 0;
             padding: 0;
@@ -12,9 +13,6 @@
             height: 100%;
             overflow: hidden;
             background: transparent;
-        }
-
-        body {
             display: none;
         }
     </style>
@@ -22,74 +20,46 @@
 <body>
     <script>
         let recognition;
-        let isListening = true;
 
-        // Función para iniciar el reconocimiento de voz
         function startRecognition() {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = "es-ES"; // Establece el idioma a español
-            recognition.continuous = false; // Detener después de una frase
-            recognition.start(); // Inicia el reconocimiento
+            recognition.lang = "es-ES";
+            recognition.continuous = true;
+            recognition.start();
 
             recognition.onresult = function (event) {
                 const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
-
-                // Detecta las palabras clave
+                
                 if (command.includes("ayuda") || command.includes("emergencia")) {
-                    stopRecognition(); // Detener el reconocimiento después de activar la acción
-
-                    // Enviar la palabra clave a la URL de Apphive
-                    sendToApphive(command);
+                    enviarAlerta(command);
                 }
-            };
-
-            recognition.onerror = function () {
-                stopRecognition(); // Detener el reconocimiento si hay un error
             };
 
             recognition.onend = function () {
-                if (isListening) {
-                    recognition.start(); // Reiniciar solo si sigue activado
-                }
+                recognition.start();
+            };
+
+            recognition.onerror = function (event) {
+                console.error("Error en reconocimiento de voz:", event.error);
+                recognition.start();
             };
         }
 
-        // Función para detener el reconocimiento de voz
-        function stopRecognition() {
-            isListening = false;
-            if (recognition) {
-                recognition.stop();
-            }
-        }
-
-        // Función para enviar la palabra clave detectada a la URL de Apphive
-        function sendToApphive(command) {
-            const url = "https://editor.apphive.io/hook/ccp_kd1seCKtZtSQMFqCY1H8GZ"; // Tu URL personalizada
-            const customData = command;  // La palabra clave detectada (command)
-
-            const data = {
-                custom: customData  // Aquí pasamos la palabra clave detectada
-            };
-
-            fetch(url, {
-                method: 'POST',
+        function enviarAlerta(mensaje) {
+            fetch("https://editor.apphive.io/hook/ccp_xfhWqSYaXL9XsprUqCRMcJ", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data)  // Enviar la información a la URL
+                body: JSON.stringify({ custom: mensaje })
             })
-            .catch(error => {
-                console.error('Error al enviar los datos:', error);
-            });
+            .then(response => response.text())
+            .then(data => console.log("Respuesta del servidor:", data))
+            .catch(error => console.error("Error en la solicitud:", error));
         }
 
-        // Iniciar el reconocimiento cuando la página cargue
         window.onload = function () {
-            // Iniciar el reconocimiento de voz cuando la página se cargue
             startRecognition();
-            
-            // Asegurarnos de que el contenido quede completamente oculto
-            document.body.style.display = 'none'; // Aseguramos que el contenido quede completamente oculto
         };
     </script>
 </body>
